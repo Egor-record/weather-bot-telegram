@@ -24,10 +24,15 @@ public class UrlRequester {
         httpClient.close();
     }
 
-    public void sendGet() throws Exception {
+    /**
+     *
+     * @param url - url to API
+     * @return String that returns you weather API
+     * @throws Exception
+     */
+    public String sendGet(String url) throws Exception {
 
-        HttpGet request = new HttpGet("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22");
-
+        HttpGet request = new HttpGet("https://samples.openweathermap.org/data/2.5/weather?" + url);
         // add request headers
         request.addHeader("custom-key", "mkyong");
         request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
@@ -41,11 +46,12 @@ public class UrlRequester {
             Header headers = entity.getContentType();
             System.out.println(headers);
 
-            if (entity != null) {
                 // return it as a String
-                String result = EntityUtils.toString(entity);
-                System.out.println(result);
-            }
+            String result = EntityUtils.toString(entity);
+            System.out.println(result);
+
+            return result;
+
 
         }
 
