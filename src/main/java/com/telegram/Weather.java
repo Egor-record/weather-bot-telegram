@@ -18,8 +18,8 @@ public class Weather {
         UrlRequester obj = new UrlRequester();
 
         try {
-            System.out.println("Testing 1 - Send Http GET request");
-            obj.sendGet();
+
+            obj.sendGet("lat=35&lon=139");
 
 
         } finally {
