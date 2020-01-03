@@ -1,10 +1,17 @@
 package com.telegram;
 
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Map;
+
 public class Weather {
 
     public String description;
 
     public double temp;
+
+    public double humidity;
 
     public String wind;
 
@@ -15,19 +22,32 @@ public class Weather {
 
     public void getRequestFromAPI() throws Exception {
 
-        UrlRequester obj = new UrlRequester();
+        UrlRequester request = new UrlRequester();
 
-        try {
+        JSONObject weather = (JSONObject) request.getWeather();
 
-            obj.sendGet("lat=35&lon=139");
+        System.out.println(weather.get("main"));
 
-
-        } finally {
-            obj.close();
-        }
 
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
+    public void setTemp(double temp) {
+        this.temp = temp;
+    }
 
+    public void setWind(String wind) {
+        this.wind = wind;
+    }
+
+    public void setSunset(double sunset) {
+        this.sunset = sunset;
+    }
+
+    public void setSunrise(double sunrise) {
+        this.sunrise = sunrise;
+    }
 }

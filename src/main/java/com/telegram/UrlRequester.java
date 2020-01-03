@@ -6,13 +6,15 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import org.apache.http.util.EntityUtils;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class UrlRequester {
@@ -30,32 +32,45 @@ public class UrlRequester {
      * @return String that returns you weather API
      * @throws Exception throws if no network
      */
-    public String sendGet(String url) throws Exception {
+    private String sendGet(String url) throws Exception {
 
-        HttpGet request = new HttpGet("https://api.openweathermap.org/data/2.5/weather?" + url + "&appid=" + Keys.Weather_Key);
+        HttpGet request = new HttpGet("https://api.openweathermap.org/data/2.5/weather?" + url + "&units=metric&appid=" + Keys.Weather_Key);
         // add request headers
         request.addHeader("custom-key", "mkyong");
         request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
 
         try (CloseableHttpResponse response = httpClient.execute(request)) {
 
-            // Get HttpResponse Status
-            System.out.println(response.getStatusLine().toString());
-
             HttpEntity entity = response.getEntity();
             Header headers = entity.getContentType();
 
-            System.out.println(headers);
-
                 // return it as a String
             String result = EntityUtils.toString(entity);
-            System.out.println(result);
 
             return result;
-
 
         }
 
     }
+
+    /***
+     *
+     * @param json - string with json
+     * @return Forecast class with object main which contains temp, feels_like, temp_min
+     */
+    private Object handleJSON(String json) throws ParseException {
+        JSONParser jsonParser = new JSONParser();
+        return jsonParser.parse(json);
+    }
+
+    public Object getWeather() throws Exception {
+        try {
+            return handleJSON(sendGet("lat=35&lon=139"));
+        } finally {
+            close();
+        }
+    }
+
+
 
 }
