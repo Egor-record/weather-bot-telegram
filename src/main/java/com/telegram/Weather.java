@@ -2,22 +2,17 @@ package com.telegram;
 
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 public class Weather {
-
-    public String description;
 
     public double temp;
 
-    public double humidity;
+    public long humidity;
 
-    public String wind;
+    public double feels_like;
 
-    public double sunset;
+    public double pressure;
 
-    public double sunrise;
+    public double wind;
 
 
     public void getRequestFromAPI() throws Exception {
@@ -26,28 +21,58 @@ public class Weather {
 
         JSONObject weather = (JSONObject) request.getWeather();
 
-        System.out.println(weather.get("main"));
+        JSONObject main = (JSONObject) weather.get("main");
 
+        JSONObject wind = (JSONObject) weather.get("wind");
+
+        setTemp((double) main.get("temp"));
+
+        setWind((double) wind.get("speed"));
+
+        setFeels_like((double) main.get("feels_like"));
+
+        setHumidity((long) main.get("humidity"));
 
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public void setTemp(double temp) {
         this.temp = temp;
     }
 
-    public void setWind(String wind) {
+    public void setWind(double wind) {
         this.wind = wind;
     }
 
-    public void setSunset(double sunset) {
-        this.sunset = sunset;
+    public void setHumidity(long humidity) {
+        this.humidity = humidity;
     }
 
-    public void setSunrise(double sunrise) {
-        this.sunrise = sunrise;
+    public void setFeels_like(double feels_like) {
+        this.feels_like = feels_like;
+    }
+
+    public void setPressure(double pressure) {
+        this.pressure = pressure;
+    }
+
+    public double getTemp() {
+        return temp;
+    }
+
+    public long getHumidity() {
+        return humidity;
+    }
+
+    public double getFeels_like() {
+        return feels_like;
+    }
+
+    public double getPressure() {
+        return pressure;
+    }
+
+    public double getWind() {
+        return wind;
     }
 }
