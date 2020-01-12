@@ -28,10 +28,7 @@ public class Weather_bot extends TelegramLongPollingBot {
 
             try {
 
-                Float latitude = update.getMessage().getLocation().getLatitude(),
-                       longitude = update.getMessage().getLocation().getLongitude();
-
-                weather.getRequestFromAPI(latitude, longitude);
+               weather.getRequestFromAPI(update.getMessage().getLocation().getLatitude(), update.getMessage().getLocation().getLongitude());
 
                Double temp =  weather.getTemp();
 
