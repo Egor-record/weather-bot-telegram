@@ -15,11 +15,11 @@ public class Weather {
     public double wind;
 
 
-    public void getRequestFromAPI() throws Exception {
+    public void getRequestFromAPI(Float lat, Float lon) throws Exception {
 
         UrlRequester request = new UrlRequester();
 
-        JSONObject weather = (JSONObject) request.getWeather();
+        JSONObject weather = (JSONObject) request.getWeather(lat, lon);
 
         JSONObject main = (JSONObject) weather.get("main");
 
@@ -27,11 +27,11 @@ public class Weather {
 
         setTemp((double) main.get("temp"));
 
-        setWind((double) wind.get("speed"));
-
-        setFeels_like((double) main.get("feels_like"));
-
-        setHumidity((long) main.get("humidity"));
+//        setWind((double) wind.get("speed"));
+//
+//        setFeels_like((double) main.get("feels_like"));
+//
+//        setHumidity((long) main.get("humidity"));
 
     }
 

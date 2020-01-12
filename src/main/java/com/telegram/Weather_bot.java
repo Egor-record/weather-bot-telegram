@@ -13,11 +13,37 @@ public class Weather_bot extends TelegramLongPollingBot {
      */
     @Override
     public void onUpdateReceived(Update update) {
+
+
         System.out.println(update.getMessage().getText());
 
         SendMessage message = new SendMessage();
 
-        message.setText("Hello");
+        if (update.getMessage().getLocation() == null) {
+            message.setText("Please send your location");
+        } else {
+            System.out.println(update.getMessage().getLocation());
+
+            Weather weather = new Weather();
+
+            try {
+
+                Float latitude = update.getMessage().getLocation().getLatitude(),
+                       longitude = update.getMessage().getLocation().getLongitude();
+
+                weather.getRequestFromAPI(latitude, longitude);
+
+               Double temp =  weather.getTemp();
+
+                String forecast = "The weather is " + temp.toString() + "C";
+
+                message.setText(forecast);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 
         message.setChatId(update.getMessage().getChatId());
 

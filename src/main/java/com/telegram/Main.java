@@ -13,9 +13,7 @@ public class Main {
 
         public static void main(String[] args) throws Exception {
 
-          //  Weather weather = new Weather();
-
-           // weather.getRequestFromAPI();
+          //
 
             ApiContextInitializer.init();
 

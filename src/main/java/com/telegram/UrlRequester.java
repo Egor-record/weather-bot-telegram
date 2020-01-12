@@ -63,9 +63,9 @@ public class UrlRequester {
         return jsonParser.parse(json);
     }
 
-    public Object getWeather() throws Exception {
+    public Object getWeather(Float lat, Float lon) throws Exception {
         try {
-            return handleJSON(sendGet("lat=35&lon=139"));
+            return handleJSON(sendGet("lat=" + lat.toString() + "&lon=" + lon.toString()));
         } finally {
             close();
         }
