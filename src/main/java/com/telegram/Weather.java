@@ -14,6 +14,8 @@ public class Weather {
 
     public double wind;
 
+    public long speed;
+
 
     public void getRequestFromAPI(Float lat, Float lon) throws Exception {
 
@@ -27,11 +29,11 @@ public class Weather {
 
         setTemp((double) main.get("temp"));
 
-//        setWind((double) wind.get("speed"));
-//
-//        setFeels_like((double) main.get("feels_like"));
-//
-//        setHumidity((long) main.get("humidity"));
+        setWind((long) wind.get("speed"));
+
+        setFeels_like((double) main.get("feels_like"));
+
+        setHumidity((long) main.get("humidity"));
 
     }
 
@@ -43,6 +45,8 @@ public class Weather {
     public void setWind(double wind) {
         this.wind = wind;
     }
+
+    public void setSpeed(long speed) {this.speed = speed; };
 
     public void setHumidity(long humidity) {
         this.humidity = humidity;
@@ -75,4 +79,6 @@ public class Weather {
     public double getWind() {
         return wind;
     }
+
+    public long getSpeed() {return speed; }
 }

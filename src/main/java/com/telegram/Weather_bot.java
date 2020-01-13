@@ -22,25 +22,8 @@ public class Weather_bot extends TelegramLongPollingBot {
         if (update.getMessage().getLocation() == null) {
             message.setText("Please send your location");
         } else {
-            System.out.println(update.getMessage().getLocation());
-
-            Weather weather = new Weather();
-
-            try {
-
-               weather.getRequestFromAPI(update.getMessage().getLocation().getLatitude(), update.getMessage().getLocation().getLongitude());
-
-               Double temp =  weather.getTemp();
-
-                String forecast = "The weather is " + temp.toString() + "C";
-
-                message.setText(forecast);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            message.setText(sendWeather(update));
         }
-
 
         message.setChatId(update.getMessage().getChatId());
 
@@ -51,6 +34,7 @@ public class Weather_bot extends TelegramLongPollingBot {
         }
     }
 
+
     @Override
     public String getBotUsername() {
         return Keys.Bot_name;
@@ -59,5 +43,31 @@ public class Weather_bot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return Keys.Telegram_Key;
+    }
+
+    private String sendWeather(Update update) {
+
+        System.out.println(update.getMessage().getLocation());
+
+        Weather weather = new Weather();
+
+        String forecast = "The weather is ";
+
+        try {
+
+            weather.getRequestFromAPI(update.getMessage().getLocation().getLatitude(), update.getMessage().getLocation().getLongitude());
+
+            double temp =  weather.getTemp();
+            String speed = String.valueOf(weather.getWind());
+         ///   double feels = weather.getFeels_like();
+
+            forecast = forecast + Double.toString(temp) + "C, wind speed is " + speed; // " and it feels like: " + feels.toString();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return forecast;
     }
 }
