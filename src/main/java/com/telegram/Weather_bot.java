@@ -75,8 +75,7 @@ public class Weather_bot extends TelegramLongPollingBot {
 
             weather.getRequestFromAPI(update.getMessage().getLocation().getLatitude(), update.getMessage().getLocation().getLongitude());
 
-
-            forecast = forecast + Double.toString(weather.getTemp()) + "C, wind speed is " + String.valueOf(weather.getWind()); // " and it feels like: " + feels.toString();
+            forecast = forecast + weather.getTemp() + "C, wind speed is " + weather.getWind(); // " and it feels like: " + feels.toString();
 
 
         } catch (Exception e) {

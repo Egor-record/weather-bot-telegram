@@ -46,6 +46,14 @@ public class Weather  {
         this.wind = wind;
     }
 
+    public double getTemp() {
+        return temp;
+    }
+
+    public double getWind() {
+        return wind;
+    }
+
     public void setSpeed(long speed) {this.speed = speed; };
 
     public void setHumidity(long humidity) {
@@ -60,10 +68,6 @@ public class Weather  {
         this.pressure = pressure;
     }
 
-    public double getTemp() {
-        return temp;
-    }
-
     public long getHumidity() {
         return humidity;
     }
@@ -74,10 +78,6 @@ public class Weather  {
 
     public double getPressure() {
         return pressure;
-    }
-
-    public double getWind() {
-        return wind;
     }
 
     public long getSpeed() {return speed; }
