@@ -2,7 +2,7 @@ package com.telegram;
 
 import org.json.simple.JSONObject;
 
-public class Weather {
+public class Weather  {
 
     public double temp;
 
@@ -29,11 +29,11 @@ public class Weather {
 
         setTemp((double) main.get("temp"));
 
-        setWind((long) wind.get("speed"));
-
-        setFeels_like((double) main.get("feels_like"));
-
-        setHumidity((long) main.get("humidity"));
+        setWind((double) wind.get("speed"));
+//
+//        setFeels_like((double) main.get("feels_like"));
+//
+//        setHumidity((long) main.get("humidity"));
 
     }
 
@@ -81,4 +81,5 @@ public class Weather {
     }
 
     public long getSpeed() {return speed; }
+
 }
