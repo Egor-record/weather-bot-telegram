@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.telegram.Users.SubscriberBuilder;
 
+import java.util.List;
+
 public class Weather_bot extends TelegramLongPollingBot {
 
     /**
@@ -31,20 +33,48 @@ public class Weather_bot extends TelegramLongPollingBot {
                 if (isTheNewUser(update)) {
                     createNewUser(update);
                     askUserAboutSubscription(update);
+                } else {
+                    if (!checkIfUserHasSubscription(update)) {
+                        askUserAboutSubscription(update);
+                    }
                 }
 
             } else if (update.getMessage().getText().equals("/subscribe")) {
                 /*
                  *  Subscribe - OK
                  */
-                sendMessage(update,"Great! You'll now receive daily weather forecast. To unsubscribe, please, send us /unsubscribe command.");
+
+                if (isTheNewUser(update)) {
+                    sendMessage(update,"Please, send us your location first");
+                } else {
+                    if (!checkIfUserHasSubscription(update)) {
+
+                       Users user = Users.findUserByChatID(update.getMessage().getChatId()).get(0);
+                       user.setSubscribed(true);
+                       Users.update(user);
+
+                        sendMessage(update,"Great! You'll now receive daily weather forecast. To unsubscribe, please, send us /unsubscribe command.");
+                    } else {
+                        sendMessage(update,"Seems like you already subscribed");
+                    }
+
+                }
 
             } else if  (update.getMessage().getText().equals("/unsubscribe")) {
                 /*
                 * Cancel subscriber - OK
                 */
-                sendMessage(update,"Subscription canceled!");
-                sendForecastToSubscribers();
+
+                if (isTheNewUser(update) || !checkIfUserHasSubscription(update)) {
+                    sendMessage(update,"Seems you don't have subscription");
+                } else {
+                    Users user = Users.findUserByChatID(update.getMessage().getChatId()).get(0);
+                    user.setSubscribed(false);
+                    Users.update(user);
+                    sendMessage(update,"Subscription canceled!");
+                }
+
+
             } else {
                 /*
                  * The rest of messages we don't handle
@@ -77,16 +107,17 @@ public class Weather_bot extends TelegramLongPollingBot {
 
         Weather weather = new Weather();
 
-        String forecast = "The weather is ";
+        String forecast = "";
 
         try {
 
             weather.getRequestFromAPI(lat, lon);
 
-            forecast = forecast + weather.getTemp() + "C, wind speed is " + weather.getWind(); // " and it feels like: " + feels.toString();
+            forecast = "The weather is " + weather.getTemp() + "C";
 
 
         } catch (Exception e) {
+            forecast = "Seems like we have a problem. We are now working on it.";
             e.printStackTrace();
         }
 
@@ -124,7 +155,17 @@ public class Weather_bot extends TelegramLongPollingBot {
     }
 
     private boolean isTheNewUser(Update update){
-        return Users.findUserByChatID(update.getMessage().getChatId()) == null;
+        System.out.println(Users.findUserByChatID(update.getMessage().getChatId()).size());
+        return Users.findUserByChatID(update.getMessage().getChatId()).size() == 0;
+    }
+
+    /**
+     * Method checks if user has subscription
+     * @param update - message from Telegram
+     * @return true if subscription is active and false if not
+     */
+    private boolean checkIfUserHasSubscription(Update update) {
+        return Users.findUserByChatID(update.getMessage().getChatId()).get(0).getSubscribed();
     }
 
     /**

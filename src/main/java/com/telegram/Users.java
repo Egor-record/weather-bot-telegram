@@ -89,6 +89,11 @@ public class Users {
         return subscribers;
     }
 
+    /**
+     * Method returns the List of one user: .get(0)
+     * @param id chatID - provided with Telegram message
+     * @return List<Users>
+     */
     public static List<Users> findUserByChatID(long id) {
 
       Session session = sessionFactory.openSession();
@@ -103,6 +108,10 @@ public class Users {
       return subscriber;
     };
 
+    /**
+     * Method to update user info
+     * @param users
+     */
     public static void update(Users users){
         Session session = sessionFactory.openSession();
         session.beginTransaction();
