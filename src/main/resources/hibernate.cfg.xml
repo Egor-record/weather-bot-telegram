@@ -14,6 +14,6 @@
         <property name="show_sql">true</property>
 
         <!-- Names the annotated entity classes -->
-        <mapping class="com.telegram.Subscribe" />
+        <mapping class="com.telegram.Users" />
     </session-factory>
 </hibernate-configuration>

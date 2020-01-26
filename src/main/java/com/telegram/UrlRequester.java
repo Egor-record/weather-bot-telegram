@@ -35,14 +35,11 @@ public class UrlRequester {
     private String sendGet(String url) throws Exception {
 
         HttpGet request = new HttpGet("https://api.openweathermap.org/data/2.5/weather?" + url + "&units=metric&appid=" + Keys.Weather_Key);
-        // add request headers
-        request.addHeader("custom-key", "mkyong");
-        request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
+
 
         try (CloseableHttpResponse response = httpClient.execute(request)) {
 
             HttpEntity entity = response.getEntity();
-            Header headers = entity.getContentType();
 
                 // return it as a String
             String result = EntityUtils.toString(entity);
