@@ -79,14 +79,16 @@ public class Users {
      * This method returns all the list of subscribers no matter they subscribed or not
      * @return the list of subscribers
      */
-    public static List<Users> fetchAllUsers() {
+    public static List<Users> fetchAllSubscribedUsers() {
         Session session = sessionFactory.openSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Users> criteria = builder.createQuery(Users.class);
-        criteria.from(Users.class);
-        List<Users> subscribers = session.createQuery(criteria).getResultList();
+        Root<Users> root = criteria.from( Users.class );
+        criteria.select( root );
+        criteria.where( builder.equal( root.get( "IsSubscribed" ), true) );
+        List<Users> subscriber = session.createQuery(criteria).getResultList();
         session.close();
-        return subscribers;
+        return subscriber;
     }
 
     /**
@@ -97,7 +99,6 @@ public class Users {
     public static List<Users> findUserByChatID(long id) {
 
       Session session = sessionFactory.openSession();
-
       CriteriaBuilder builder = session.getCriteriaBuilder();
       CriteriaQuery<Users> criteria = builder.createQuery(Users.class);
       Root<Users> root = criteria.from( Users.class );
@@ -107,6 +108,7 @@ public class Users {
       session.close();
       return subscriber;
     };
+
 
     /**
      * Method to update user info

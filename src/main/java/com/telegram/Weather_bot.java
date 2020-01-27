@@ -126,7 +126,7 @@ public class Weather_bot extends TelegramLongPollingBot {
     }
 
     private void sendForecastToSubscribers() {
-        Users.fetchAllUsers().forEach(System.out::println);
+        Users.fetchAllSubscribedUsers().forEach(System.out::println);
     }
 
     /**
