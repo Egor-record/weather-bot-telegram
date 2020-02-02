@@ -1,12 +1,15 @@
 package com.telegram;
 
+import org.json.simple.JSONObject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.telegram.Users.SubscriberBuilder;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Weather_bot extends TelegramLongPollingBot {
 
@@ -28,7 +31,7 @@ public class Weather_bot extends TelegramLongPollingBot {
                 /*
                  *  Location - OK
                  */
-                sendMessage(update, sendWeather(update.getMessage().getLocation().getLatitude(), update.getMessage().getLocation().getLongitude()));
+                sendMessage(update.getMessage().getChatId(), sendWeather(update.getMessage().getLocation().getLatitude(), update.getMessage().getLocation().getLongitude()));
 
                 if (isTheNewUser(update)) {
                     createNewUser(update);
@@ -45,7 +48,7 @@ public class Weather_bot extends TelegramLongPollingBot {
                  */
 
                 if (isTheNewUser(update)) {
-                    sendMessage(update,"Please, send us your location first");
+                    sendMessage(update.getMessage().getChatId(),"Please, send us your location first");
                 } else {
                     if (!checkIfUserHasSubscription(update)) {
 
@@ -53,9 +56,9 @@ public class Weather_bot extends TelegramLongPollingBot {
                        user.setSubscribed(true);
                        Users.update(user);
 
-                        sendMessage(update,"Great! You'll now receive daily weather forecast. To unsubscribe, please, send us /unsubscribe command.");
+                        sendMessage(update.getMessage().getChatId(),"Great! You'll now receive daily weather forecast. To unsubscribe, please, send us /unsubscribe command.");
                     } else {
-                        sendMessage(update,"Seems like you already subscribed");
+                        sendMessage(update.getMessage().getChatId(),"Seems like you already subscribed");
                     }
 
                 }
@@ -66,12 +69,12 @@ public class Weather_bot extends TelegramLongPollingBot {
                 */
 
                 if (isTheNewUser(update) || !checkIfUserHasSubscription(update)) {
-                    sendMessage(update,"Seems you don't have subscription");
+                    sendMessage(update.getMessage().getChatId(),"Seems you don't have subscription");
                 } else {
                     Users user = Users.findUserByChatID(update.getMessage().getChatId()).get(0);
                     user.setSubscribed(false);
                     Users.update(user);
-                    sendMessage(update,"Subscription canceled!");
+                    sendMessage(update.getMessage().getChatId(),"Subscription canceled!");
                 }
 
 
@@ -79,7 +82,8 @@ public class Weather_bot extends TelegramLongPollingBot {
                 /*
                  * The rest of messages we don't handle
                  */
-                sendMessage(update, "Please send your location");
+                sendMessage(update.getMessage().getChatId(), "Please send your location");
+
             }
 
         });
@@ -103,7 +107,7 @@ public class Weather_bot extends TelegramLongPollingBot {
      * Sends request to weather API.
      * Returns: string with weather info
      */
-    private String sendWeather(Float lat, Float lon) {
+    private static String sendWeather(Float lat, Float lon) {
 
         Weather weather = new Weather();
 
@@ -151,11 +155,10 @@ public class Weather_bot extends TelegramLongPollingBot {
      * @param update
      */
     private void askUserAboutSubscription(Update update) {
-        sendMessage(update,"Would you also like to receive this forecast daily with this location? Please send /subscribe for this");
+        sendMessage(update.getMessage().getChatId(),"Would you also like to receive this forecast daily with this location? Please send /subscribe for this");
     }
 
     private boolean isTheNewUser(Update update){
-        System.out.println(Users.findUserByChatID(update.getMessage().getChatId()).size());
         return Users.findUserByChatID(update.getMessage().getChatId()).size() == 0;
     }
 
@@ -170,12 +173,13 @@ public class Weather_bot extends TelegramLongPollingBot {
 
     /**
      * Method which sends to user message
-     * @param update - response from Telegram
+     * @param chatId - response from Telegram
      * @param text text you wanted to send in response to user
      */
-    private void sendMessage(Update update, String text) {
+    private void sendMessage(Long chatId, String text) {
         SendMessage message = new SendMessage();
-        message.setChatId(update.getMessage().getChatId());
+
+        message.setChatId(chatId);
         message.setText(text);
         try {
             execute(message);
@@ -184,5 +188,43 @@ public class Weather_bot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Checks if it's 10 hours in the morning and if yes sends your weather of your latest weather request
+     */
+    public void sendForecastByTimer() {
+       for (Users user : Users.fetchAllSubscribedUsers()) {
+              new Thread(() -> {
+                  UrlRequester sender = new UrlRequester();
+
+                  try {
+
+                      JSONObject res = (JSONObject) sender.handleJSON(sender.sendGet("http://api.timezonedb.com/v2.1/get-time-zone?key=" + Keys.Timezone_Key + "&format=json&by=position&lat=" + user.getLat() + "&lng=" + user.getLon()));
+
+                      DateTimeFormatter formatter  = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+
+                      String text = (String) res.get("formatted");
+
+                      try {
+
+                        if ( LocalDateTime.parse(text, formatter).getHour() == 10 ) {
+
+                            sendMessage(user.getChatID(), sendWeather(user.getLat(), user.getLon()));
+
+                        };
+
+                      } catch (Exception dateTime) {
+
+                          System.out.println("Can't parse local date time from API");
+                      }
+
+                  } catch (Exception e) {
+                      e.printStackTrace();
+                  }
+
+
+              }).start();
+       }
+
+    }
 
 }

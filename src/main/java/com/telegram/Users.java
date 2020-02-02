@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -80,15 +82,7 @@ public class Users {
      * @return the list of subscribers
      */
     public static List<Users> fetchAllSubscribedUsers() {
-        Session session = sessionFactory.openSession();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Users> criteria = builder.createQuery(Users.class);
-        Root<Users> root = criteria.from( Users.class );
-        criteria.select( root );
-        criteria.where( builder.equal( root.get( "IsSubscribed" ), true) );
-        List<Users> subscriber = session.createQuery(criteria).getResultList();
-        session.close();
-        return subscriber;
+        return sortDB("IsSubscribed", true);
     }
 
     /**
@@ -97,17 +91,22 @@ public class Users {
      * @return List<Users>
      */
     public static List<Users> findUserByChatID(long id) {
-
-      Session session = sessionFactory.openSession();
-      CriteriaBuilder builder = session.getCriteriaBuilder();
-      CriteriaQuery<Users> criteria = builder.createQuery(Users.class);
-      Root<Users> root = criteria.from( Users.class );
-      criteria.select( root );
-      criteria.where( builder.equal( root.get( "ChatID" ), id) );
-      List<Users> subscriber = session.createQuery(criteria).getResultList();
-      session.close();
-      return subscriber;
+      return sortDB("ChatID", id);
     };
+
+    private static List<Users> sortDB(String value, Object var){
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Users> criteria = builder.createQuery(Users.class);
+        Root<Users> root = criteria.from( Users.class );
+        criteria.select( root );
+        System.out.println(var);
+        criteria.where( builder.equal( root.get( value ), var) );
+        List<Users> subscriber = session.createQuery(criteria).getResultList();
+        session.close();
+        return subscriber;
+
+    }
 
 
     /**

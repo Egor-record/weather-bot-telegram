@@ -15,7 +15,29 @@ public class Main {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
 
             try {
-                telegramBotsApi.registerBot(new Weather_bot());
+
+                Weather_bot bot = new Weather_bot();
+
+                telegramBotsApi.registerBot(bot);
+
+                Thread t = new Thread(() -> {
+
+                    while(true) {
+
+                        try {
+
+                            Thread.sleep(1000*60*60);
+
+                            bot.sendForecastByTimer();
+
+
+                        } catch (InterruptedException ie) {
+                            System.out.println("Timer exception");
+                        }
+                    }
+                });
+                t.start();
+
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }

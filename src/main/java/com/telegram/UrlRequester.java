@@ -32,9 +32,11 @@ public class UrlRequester {
      * @return String that returns you weather API
      * @throws Exception throws if no network
      */
-    private String sendGet(String url) throws Exception {
+    public String sendGet(String url) throws Exception {
 
-        HttpGet request = new HttpGet("https://api.openweathermap.org/data/2.5/weather?" + url + "&units=metric&appid=" + Keys.Weather_Key);
+        //
+
+        HttpGet request = new HttpGet(url);
 
 
         try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -55,14 +57,14 @@ public class UrlRequester {
      * @param json - string with json
      * @return Forecast class with object main which contains temp, feels_like, temp_min
      */
-    private Object handleJSON(String json) throws ParseException {
+    public Object handleJSON(String json) throws ParseException {
         JSONParser jsonParser = new JSONParser();
         return jsonParser.parse(json);
     }
 
     public Object getWeather(Float lat, Float lon) throws Exception {
         try {
-            return handleJSON(sendGet("lat=" + lat.toString() + "&lon=" + lon.toString()));
+            return handleJSON(sendGet("https://api.openweathermap.org/data/2.5/weather?lat=" + lat.toString() + "&lon=" + lon.toString() + "&units=metric&appid=" + Keys.Weather_Key));
         } finally {
             close();
         }
